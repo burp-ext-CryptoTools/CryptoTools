@@ -6,7 +6,7 @@ public class BurpExtender implements IBurpExtender {
 
     ITabClass iTabClass;
     EditorTabClass editorTabClass;
-    MenuFactoryClass menuFactoryClass;
+    public static MenuFactoryClass menuFactoryClass;
 
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {

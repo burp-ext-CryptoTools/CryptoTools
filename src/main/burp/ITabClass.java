@@ -6,7 +6,6 @@ import java.awt.*;
 
 public class ITabClass implements ITab{
     GUI gui;
-//    public AutoCryptConfigUI editorTabUI;
 
     public ITabClass() {
         gui = new GUI();

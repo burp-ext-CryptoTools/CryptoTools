@@ -3,7 +3,7 @@ package config;
 import lib.CryptoChains;
 
 public class autoCryptConfig {
-    public static String hostReg;
+    public static String hostReg = "";
     public static CryptoChains.CryptoChain requestEncryptChain;
     public static CryptoChains.CryptoChain requestDecryptChain;
     public static CryptoChains.CryptoChain responseEncryptChain;
