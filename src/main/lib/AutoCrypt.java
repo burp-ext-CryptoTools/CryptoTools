@@ -84,7 +84,7 @@ public class AutoCrypt {
             decryptChain = autoCryptConfig.responseDecryptChain;
         }
 
-        Pattern pattern = Pattern.compile(regStr);
+        Pattern pattern = Pattern.compile(regStr, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(data);
 
         StringBuilder buffer = new StringBuilder();
