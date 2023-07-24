@@ -19,7 +19,6 @@ public class BurpExtender implements IBurpExtender {
         menuFactoryClass = new MenuFactoryClass();
         editorTabClass = new EditorTabClass();
 
-
         callbacks.addSuiteTab(iTabClass);  // 添加tab
         callbacks.registerMessageEditorTabFactory(editorTabClass);  // 添加数据包编辑tab
         callbacks.registerContextMenuFactory(menuFactoryClass);     // 添加右击菜单
