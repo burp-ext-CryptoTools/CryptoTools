@@ -75,7 +75,7 @@ public class GUI extends JFrame {
      */
     public void addNewTable(int count) {
         newIndex += 1;
-        String title = "右击菜单配置" + newIndex;
+        String title = "加解密链配置" + newIndex;
 
         tabbedPane.insertTab(title, null, new ActiveCryptConfigUI(), null, count - 1);
 

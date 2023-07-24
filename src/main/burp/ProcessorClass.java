@@ -1,13 +1,12 @@
 package burp;
 
-import lib.CryptoChain;
+import lib.CryptoChains.CryptoChain;
 
-import java.util.HashMap;
+import java.util.List;
 
 public class ProcessorClass implements IIntruderPayloadProcessor {
     String name;
     CryptoChain cryptoChain;
-    public static HashMap<String, ProcessorClass> registeredProcessorList = new HashMap<>();
 
     public ProcessorClass(String name, CryptoChain cryptoChain) {
         this.name = name;
@@ -33,27 +32,27 @@ public class ProcessorClass implements IIntruderPayloadProcessor {
         return currentPayload;
     }
 
-    public String add2Processor() {
-        if ("".equals(name))
-            return "菜单名不能为空";
-
+    public void add2Processor() {
         delProcessor(name);
-
-        registeredProcessorList.put(name, this);
         BurpExtender.callback.registerIntruderPayloadProcessor(this);
-
-        return name + "添加成功";
     }
 
-    public String delProcessor(String name) {
-        for (String _name : registeredProcessorList.keySet()) {
-            if (_name.equals(name)) {
-                BurpExtender.callback.removeIntruderPayloadProcessor(registeredProcessorList.get(_name));
-                registeredProcessorList.remove(_name);
-                break;
+    public static String delProcessor(String name) {
+        List<IIntruderPayloadProcessor> processors = BurpExtender.callback.getIntruderPayloadProcessors();
+        for (IIntruderPayloadProcessor processor : processors) {
+            if (name.equals(processor.getProcessorName())) {
+                BurpExtender.callback.removeIntruderPayloadProcessor(processor);
+                return name + "删除成功";
             }
         }
+        return name + "删除失败";
+    }
 
-        return name + "删除成功";
+    public static String removeAllProcessor() {
+        for (IIntruderPayloadProcessor processor : BurpExtender.callback.getIntruderPayloadProcessors()) {
+            BurpExtender.callback.removeIntruderPayloadProcessor(processor);
+        }
+
+        return "清除成功";
     }
 }

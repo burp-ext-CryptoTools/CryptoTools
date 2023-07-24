@@ -1,6 +1,6 @@
 package lib.Cryptos;
 
-import lib.ProcessData;
+import lib.AutoCrypt;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -39,7 +39,7 @@ public class RSACrypto {
         if ("Base64".equalsIgnoreCase(coding))
             return Base64.getEncoder().encodeToString(encryptedBytes);
         else if ("hex".equalsIgnoreCase(coding))
-            return ProcessData.bytesToHex(encryptedBytes);
+            return AutoCrypt.bytesToHex(encryptedBytes);
         else
             return new String(encryptedBytes);
     }
@@ -54,7 +54,7 @@ public class RSACrypto {
         if ("Base64".equalsIgnoreCase(coding))
             encryptedBytes = Base64.getDecoder().decode(encryptedText);
         else if ("hex".equalsIgnoreCase(coding))
-            encryptedBytes = ProcessData.hexToBytes(encryptedText);
+            encryptedBytes = AutoCrypt.hexToBytes(encryptedText);
         else
             encryptedBytes = encryptedText.getBytes();
 
