@@ -1,11 +1,13 @@
 package burp;
 
 import config.autoCryptConfig;
-import lib.ProcessData;
+import lib.AutoCrypt;
 import ui.AutoCryptConfigUI;
 import ui.MessageEditorUI;
 
 import java.awt.*;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class EditorTabClass implements IMessageEditorTabFactory {
     IExtensionHelpers helpers;
@@ -25,16 +27,16 @@ public class EditorTabClass implements IMessageEditorTabFactory {
     class PacketCryptTab implements IMessageEditorTab {
 
         boolean editable;
-        IMessageEditorController controller;
         boolean isRequest;
         byte[] currentMessage;
         IMessageEditor view;
+        IMessageEditorController controller;
 
         public PacketCryptTab(IMessageEditorController _controller, boolean _editable) {
             editable = _editable;
             controller = _controller;
 
-            view = callback.createMessageEditor(new MessageEditorUI(), true);
+            view = callback.createMessageEditor(new MessageEditorUI(_controller.getHttpService()), true);
         }
 
         @Override
@@ -50,22 +52,19 @@ public class EditorTabClass implements IMessageEditorTabFactory {
         @Override
         // 是否在页面中展示 IMessageEditorTab
         public boolean isEnabled(byte[] content, boolean isRequest) {
-            if (controller == null)
-                return true;
-
             IHttpService httpService = controller.getHttpService();
 
-            // 内层的数据包不显示该插件
-            // MessageEditorUI 返回的 httpService host 为 none，port 为 1
-            // 应该不会真的有 host 为 none 且 port 为 1 的服务吧，暂无更好的处理方式了
-            if (httpService == null || "none".equals(httpService.getHost()) && httpService.getPort() == 1)
+            if (httpService == null)
                 return false;
 
-            String hostReg = autoCryptConfig.hostReg;
+            /*
+            真想不出怎么解决让插件在内层不显示的问题，待添加
+             */
 
+            String hostReg = autoCryptConfig.hostReg;
             String host = httpService.getHost();
 
-            return "".equals(hostReg) || hostReg == null || host != null && host.matches(hostReg);
+            return "".equals(hostReg) || host != null && host.matches(hostReg);
         }
 
         @Override
@@ -74,11 +73,8 @@ public class EditorTabClass implements IMessageEditorTabFactory {
             this.isRequest = isRequest;
             this.currentMessage = content;
 
-            if (content == null || content.length == 0) {
-                view.setMessage(new byte[]{}, isRequest);
-            } else {
-                byte[] newContent = ProcessData.unpackPacket(content, helpers, isRequest, true);
-
+            if (content != null || content.length != 0) {
+                byte[] newContent = AutoCrypt.unpackPacket(content, helpers, isRequest, true);
                 view.setMessage(newContent, isRequest);
             }
         }
@@ -87,7 +83,7 @@ public class EditorTabClass implements IMessageEditorTabFactory {
         // 该方法的返回值将替换原始数据包
         public byte[] getMessage() {
             if (view.isMessageModified()) {
-                return ProcessData.unpackPacket(view.getMessage(), helpers, isRequest, false);
+                return AutoCrypt.unpackPacket(view.getMessage(), helpers, isRequest, false);
             } else {
                 return currentMessage;
             }

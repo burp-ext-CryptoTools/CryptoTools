@@ -1,6 +1,6 @@
 package burp;
 
-import lib.CryptoChain;
+import lib.CryptoChains.CryptoChain;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,10 +20,7 @@ public class MenuFactoryClass implements IContextMenuFactory {
         return menu_item_list;
     }
 
-    public String addMenuItem(String itemName, CryptoChain cryptoChain) {
-        if ("".equals(itemName))
-            return "菜单名不能为空";
-
+    public void addMenuItem(String itemName, CryptoChain cryptoChain) {
         delMenuItem(itemName);
 
         JMenuItem menuItem = new JMenuItem(itemName);
@@ -107,35 +104,20 @@ public class MenuFactoryClass implements IContextMenuFactory {
         });
 
         menu_item_list.add(menuItem);
-        refresh();
-
-        return itemName + " 添加成功";
     }
 
-    public String delMenuItem(String itemName) {
-        int index = 0;
-        for (JMenuItem menu_item : menu_item_list) {
-            if (itemName.equals(menu_item.getText())) {
-                menu_item_list.remove(index);
-                refresh();
+    public static String delMenuItem(String itemName) {
+        for (JMenuItem jMenuItem : menu_item_list) {
+            if (itemName.equals(jMenuItem.getText())) {
+                menu_item_list.remove(jMenuItem);
                 return itemName + " 已删除";
             }
-            index += 1;
         }
         return itemName + " 删除失败";
     }
 
     public static String delAllMenuItem() {
         menu_item_list.clear();
-
-        for (IContextMenuFactory menuFactory : BurpExtender.callback.getContextMenuFactories()) {
-            BurpExtender.callback.removeContextMenuFactory(menuFactory);
-        }
-
         return "已全部删除";
-    }
-
-    public void refresh() {
-        BurpExtender.callback.registerContextMenuFactory(this);
     }
 }

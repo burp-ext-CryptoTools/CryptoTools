@@ -1,23 +1,15 @@
 package config;
 
+import lib.CryptoChains;
+
 public class autoCryptConfig {
-    public static String hostReg;
-    public static String requestAlgorithm;
-    public static String responseAlgorithm;
-    public static String requestMethod;
-    public static String responseMethod;
-    public static String requestKey;
-    public static String responseKey;
-    public static String requestKeyEncode;
-    public static String responseKeyEncode;
-    public static String requestIV;
-    public static String responseIV;
-    public static String requestIVEncode;
-    public static String responseIVEncode;
-    public static String requestCryptoLocation;
-    public static String responseCryptoLocation;
-    public static String requestCryptoEncode;
-    public static String responseCryptoEncode;
+    public static String hostReg = "";
+    public static CryptoChains.CryptoChain requestEncryptChain;
+    public static CryptoChains.CryptoChain requestDecryptChain;
+    public static CryptoChains.CryptoChain responseEncryptChain;
+    public static CryptoChains.CryptoChain responseDecryptChain;
     public static String requestCryptoReg;
     public static String responseCryptoReg;
+    public static String requestCryptoLocation;
+    public static String responseCryptoLocation;
 }

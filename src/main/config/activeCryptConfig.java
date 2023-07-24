@@ -1,9 +1,6 @@
 package config;
 
-import ui.ActiveCryptConfigUI.CryptoCards;
-
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class activeCryptConfig {
     public static ArrayList<String> optionList = new ArrayList<>();
@@ -27,9 +24,8 @@ public class activeCryptConfig {
         optionList.add("SM4Decrypt");
         optionList.add("SM2Encrypt");
         optionList.add("SM2Decrypt");
-        optionList.add("convertCharset");
+//        optionList.add("convertCharset");
         optionList.add("hash");
-
-
+        optionList.add("stringReplace");
     }
 }
