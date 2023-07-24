@@ -1,5 +1,6 @@
 package lib;
 
+import burp.BurpExtender;
 import burp.MenuFactoryClass;
 import burp.ProcessorClass;
 import ui.AutoCryptConfigUI;
@@ -18,7 +19,7 @@ public class CryptoChains {
         cryptoChainLinkedHashMap.put(chainName, cryptoChain);
 
         // 添加到右击菜单
-        MenuFactoryClass menuFactoryClass = new MenuFactoryClass();
+        MenuFactoryClass menuFactoryClass = BurpExtender.menuFactoryClass;
         menuFactoryClass.addMenuItem(chainName, cryptoChain);
 
         // 添加到processor
