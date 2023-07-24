@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ProcessData {
+public class AutoCrypt {
     public static byte[] unpackPacket(byte[] packet, IExtensionHelpers helpers, boolean isRequest, boolean decode) {
         List<String> headers;
         String urlParameters = "";
@@ -74,29 +74,15 @@ public class ProcessData {
         if (data == null || "".equals(data) || regStr == null || "".equals(regStr))
             return data;
 
-        String algorithm;
-        String method;
-        byte[] key;
-        byte[] iv;
-        String coding;
-
+        CryptoChains.CryptoChain encryptChain;
+        CryptoChains.CryptoChain decryptChain;
         if (isRequest) {
-            algorithm = autoCryptConfig.requestAlgorithm;
-            method = autoCryptConfig.requestMethod;
-            key = string2byes(autoCryptConfig.requestKey, autoCryptConfig.requestKeyEncode);
-            iv = string2byes(autoCryptConfig.requestIV, autoCryptConfig.requestIVEncode);
-            coding = autoCryptConfig.requestCryptoEncode;
-        } else {
-            algorithm = autoCryptConfig.responseAlgorithm;
-            method = autoCryptConfig.responseMethod;
-            key = string2byes(autoCryptConfig.responseKey, autoCryptConfig.responseKeyEncode);
-            iv = string2byes(autoCryptConfig.responseIV, autoCryptConfig.responseIVEncode);
-            coding = autoCryptConfig.responseCryptoEncode;
+            encryptChain = autoCryptConfig.requestEncryptChain;
+            decryptChain = autoCryptConfig.requestDecryptChain;
+        }else {
+            encryptChain = autoCryptConfig.responseEncryptChain;
+            decryptChain = autoCryptConfig.responseDecryptChain;
         }
-
-
-        Crypto crypto = new Crypto(algorithm, method, key, iv, coding);
-
 
         Pattern pattern = Pattern.compile(regStr);
         Matcher matcher = pattern.matcher(data);
@@ -114,13 +100,22 @@ public class ProcessData {
 
             for (int i = 1; i <= matcher.groupCount(); i++) {
                 String match = matcher.group(i);
+                if ("".equals(match))
+                    break;
 
                 // 对匹配到的数据进行加解密
                 String value;
-                if (decode)
-                    value = crypto.decrypt(match);
-                else
-                    value = crypto.encrypt(match);
+                try {
+                    if (decode && decryptChain != null)
+                        value = decryptChain.doFinal(match);
+                    else if (!decode && encryptChain != null)
+                        value = encryptChain.doFinal(match);
+                    else
+                        value = match;
+                }catch (Exception e){
+                    BurpExtender.callback.printError(e.toString());
+                    value = match;
+                }
 
                 replacement.append(data, start, matcher.start(i)).append(value);
                 start = matcher.end(i);

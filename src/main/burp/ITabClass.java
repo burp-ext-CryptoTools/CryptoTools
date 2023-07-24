@@ -10,7 +10,6 @@ public class ITabClass implements ITab{
 
     public ITabClass() {
         gui = new GUI();
-//        editorTabUI = gui.editorTabUI;
     }
 
     @Override

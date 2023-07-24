@@ -10,7 +10,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Security;
 import java.util.Base64;
-import java.util.Enumeration;
 
 public class Crypto {
     String algorithm;
@@ -64,7 +63,7 @@ public class Crypto {
                     if ("Base64".equalsIgnoreCase(coding))
                         return Base64.getEncoder().encodeToString(encrypted);
                     else if ("hex".equalsIgnoreCase(coding))
-                        return ProcessData.bytesToHex(encrypted);
+                        return AutoCrypt.bytesToHex(encrypted);
                     else
                         return new String(encrypted);
                 }
@@ -109,7 +108,7 @@ public class Crypto {
                     if ("Base64".equalsIgnoreCase(coding))
                         encrypted = Base64.getDecoder().decode(content);
                     else
-                        encrypted = ProcessData.hexToBytes(content);
+                        encrypted = AutoCrypt.hexToBytes(content);
                     if (ivSpec != null)
                         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
                     else

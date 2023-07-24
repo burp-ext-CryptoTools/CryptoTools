@@ -1,15 +1,13 @@
 package ui;
 
-import burp.BurpExtender;
-import burp.IIntruderPayloadProcessor;
 import burp.MenuFactoryClass;
+import burp.ProcessorClass;
 import config.activeCryptConfig;
 import config.allCryptoConfig;
-import lib.CryptoChain;
+import lib.CryptoChains;
+import lib.CryptoChains.CryptoChain;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -17,9 +15,9 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.security.Security;
 
-import static burp.MenuFactoryClass.delAllMenuItem;
-import static burp.MenuFactoryClass.menu_item_list;
-
+/**
+ * 添加加解密链的UI，包括左侧选择列表和右侧已选择的加解密算法的卡片
+ */
 public class ActiveCryptConfigUI extends JPanel {
     public CryptoChain cryptoChain = new CryptoChain();
     public JPanel selectedPanel;
@@ -63,24 +61,22 @@ public class ActiveCryptConfigUI extends JPanel {
         centerPanel.add(selectedScrollPanel, gbc);
 
         // 中右部分，输入输出窗口(暂时去掉)
-        gbc.gridx = 2;
-        gbc.weightx = 60;
-
-        JPanel IOPanel = new JPanel();
-        IOPanel.setBackground(new Color(2000000000));
-
+//        gbc.gridx = 2;
+//        gbc.weightx = 60;
+//
+//        JPanel IOPanel = new JPanel();
+//        IOPanel.setBackground(new Color(2000000000));
+//
 //        centerPanel.add(IOPanel, gbc);
 
         // 底部，保存按钮
         JPanel bottomPanel = new JPanel();
 
-        JButton add2MenujButton = new JButton("添加到右击菜单");
-        JButton add2ProcessButton = new JButton("添加到Process");
-        JButton manageButton = new JButton("管理菜单");
-        JButton clearMenuButton = new JButton("清除所有菜单");
+        JButton addChainjButton = new JButton("添加到加解密链");
+        JButton manageButton = new JButton("管理加解密链");
+        JButton clearMenuButton = new JButton("清除所有加解密链");
 
-        bottomPanel.add(add2MenujButton);
-        bottomPanel.add(add2ProcessButton);
+        bottomPanel.add(addChainjButton);
         bottomPanel.add(manageButton);
         bottomPanel.add(clearMenuButton);
 
@@ -96,90 +92,45 @@ public class ActiveCryptConfigUI extends JPanel {
                 jDialog.setSize(400, 300);
                 jDialog.setPreferredSize(new Dimension(400, 300));
 
-                Border border = BorderFactory.createEmptyBorder(10, 10, 10, 10);
-                // 创建左侧面板
-                JPanel leftPanel = new JPanel(new BorderLayout());
-                leftPanel.setBorder(new TitledBorder(border, "右击菜单", TitledBorder.CENTER, TitledBorder.TOP));
-
-                // 添加左侧面板元素
                 JPanel leftElements = new JPanel(new GridLayout(0, 1, 0, 5));
-                for (JMenuItem menuItem : menu_item_list) {
-                    String menuItemName = menuItem.getText();
-
-                    JLabel label = new JLabel(menuItemName);
+                for (String cryptoName : CryptoChains.cryptoChainLinkedHashMap.keySet()) {
+                    JLabel label = new JLabel(cryptoName);
                     JButton delButton = new JButton("×");
-
                     JPanel element = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
                     element.add(label);
                     element.add(delButton);
-
                     leftElements.add(element);
 
                     delButton.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            for (JMenuItem jMenuItem : menu_item_list) {
-                                if (menuItemName.equals(jMenuItem.getText())) {
-                                    menu_item_list.remove(jMenuItem);
-                                    leftElements.remove(element);
-                                    leftElements.repaint();
-                                    break;
-                                }
-                            }
+                            // 删除右击菜单
+                            MenuFactoryClass.delMenuItem(cryptoName);
+
+                            // 删除Processor
+                            ProcessorClass.delProcessor(cryptoName);
+
+                            // 删除自动加解密选择项
+                            CryptoChains.cryptoChainLinkedHashMap.remove(cryptoName);
+                            CryptoChains.refreshCryptoComboBox();
+
+                            // 更新管理框的条目
+                            leftElements.remove(element);
+                            leftElements.repaint();
                         }
                     });
                 }
-
 
                 JScrollPane leftScrollPane = new JScrollPane(leftElements);
                 leftScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                leftPanel.add(leftScrollPane, BorderLayout.CENTER);
+                jDialog.add(leftScrollPane, BorderLayout.CENTER);
 
-                // 创建右侧面板
-                JPanel rightPanel = new JPanel(new BorderLayout());
-                rightPanel.setBorder(new TitledBorder(border, "Processors", TitledBorder.CENTER, TitledBorder.TOP));
-
-                // 添加右侧面板元素
-                JPanel rightElements = new JPanel(new GridLayout(0, 1, 0, 5));
-                for (IIntruderPayloadProcessor processor : BurpExtender.callback.getIntruderPayloadProcessors()) {
-                    String processorName = processor.getProcessorName();
-
-                    JPanel element = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-
-                    JLabel label = new JLabel(processorName);
-                    JButton delButton = new JButton("×");
-
-                    element.add(label);
-                    element.add(delButton);
-
-                    rightElements.add(element);
-
-                    delButton.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent e) {
-                            BurpExtender.callback.removeIntruderPayloadProcessor(processor);
-                            rightElements.remove(element);
-                            rightElements.repaint();
-                        }
-                    });
-                }
-
-
-                JScrollPane rightScrollPane = new JScrollPane(rightElements);
-                rightScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                rightPanel.add(rightScrollPane, BorderLayout.CENTER);
-
-                // 创建分割面板，用于平均分配左右两个面板的空间
-                JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
-                splitPane.setResizeWeight(0.5);
-                splitPane.setDividerSize(0);
-                jDialog.add(splitPane, BorderLayout.CENTER);
                 jDialog.setVisible(true);
             }
         });
 
-        // 添加到右击菜单
-        add2MenujButton.addMouseListener(new MouseAdapter() {
+        // 添加到加解密链
+        addChainjButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String itemName = nameTextField.getText();
@@ -189,48 +140,35 @@ public class ActiveCryptConfigUI extends JPanel {
                     nameTextField.setText(itemName);
                 }
 
-                cryptoChain.getCryptChain();
-                String msg = cryptoChain.add2Menu(itemName);
+                String msg = CryptoChains.addChain(itemName, cryptoChain);
                 JOptionPane.showMessageDialog(null, msg, "提示", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
-        // 添加到 Processor
-        add2ProcessButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String itemName = nameTextField.getText();
-
-                if ("".equals(itemName)) {
-                    itemName = JOptionPane.showInputDialog("请输入菜单名");
-                    nameTextField.setText(itemName);
-                }
-
-                cryptoChain.getCryptChain();
-                String msg = cryptoChain.add2Processor(itemName);
-                JOptionPane.showMessageDialog(null, msg, "提示", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        // 清除所有 右击菜单 和 Processor
+        // 清除所有加解密链
         clearMenuButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int option = JOptionPane.showConfirmDialog(centerPanel, "是否清除所有右击菜单和Processor", "清除所有菜单", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                int option = JOptionPane.showConfirmDialog(centerPanel, "是否清除所有加解密链", "清除所有", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (option == JOptionPane.YES_OPTION) {
 
-                    // 删除所有 processor
-                    delAllMenuItem();
+                    // 删除所有 右击菜单
+                    MenuFactoryClass.delAllMenuItem();
 
                     // 删除所有 processor
-                    for (IIntruderPayloadProcessor processor : BurpExtender.callback.getIntruderPayloadProcessors()) {
-                        BurpExtender.callback.removeIntruderPayloadProcessor(processor);
-                    }
+                    ProcessorClass.removeAllProcessor();
+
+                    // 删除所有自动加解密选择项
+                    CryptoChains.cryptoChainLinkedHashMap.clear();
+                    CryptoChains.refreshCryptoComboBox();
                 }
             }
         });
     }
 
+    /**
+     * 左侧选择列表，所有可用的加解密方式
+     */
     public JScrollPane optionListJPanel() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -272,6 +210,9 @@ public class ActiveCryptConfigUI extends JPanel {
         return listScrollPane;
     }
 
+    /**
+     * 上移、下移、删除卡片后更新UI
+     */
     public void refreshSelectedPanel() {
         int size = cryptoChain.cardChain.size();
         selectedPanel.removeAll();
@@ -288,6 +229,9 @@ public class ActiveCryptConfigUI extends JPanel {
         selectedPanel.requestFocus();
     }
 
+    /**
+     * 创建加解密卡片，通过反射调用
+     */
     public class CryptoCards {
         public JPanel urlDecodeCard() {
             return baseCard("urlDecode", null, ActiveCryptConfigUI.this);
@@ -343,6 +287,37 @@ public class ActiveCryptConfigUI extends JPanel {
             jPanel.add(box);
 
             return baseCard("hash", jPanel, ActiveCryptConfigUI.this);
+        }
+
+        public JPanel stringReplaceCard() {
+            JPanel jPanel = new JPanel();
+            jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.PAGE_AXIS));
+
+            JPanel checkPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JCheckBox regCheckBox = new JCheckBox("使用正则");
+
+            checkPanel.add(regCheckBox);
+
+            JPanel inputPanel = new JPanel();
+            inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.LINE_AXIS));
+
+            JLabel findLabel = new JLabel("查找内容: ");
+            JTextField findTextField = new JTextField();
+            findTextField.setPreferredSize(new Dimension(findTextField.getPreferredSize().width, 5));
+
+            JLabel replaceLabel = new JLabel("替换为: ");
+            JTextField replaceTextField = new JTextField();
+            replaceTextField.setPreferredSize(new Dimension(replaceTextField.getPreferredSize().width, 5));
+
+            inputPanel.add(findLabel);
+            inputPanel.add(findTextField);
+            inputPanel.add(replaceLabel);
+            inputPanel.add(replaceTextField);
+
+            jPanel.add(checkPanel);
+            jPanel.add(inputPanel);
+
+            return baseCard("stringReplace", jPanel, ActiveCryptConfigUI.this);
         }
 
         public JPanel AESDecryptCard() {
@@ -552,11 +527,6 @@ public class ActiveCryptConfigUI extends JPanel {
             JPanel jPanel2 = new JPanel();
             jPanel2.setLayout(new BoxLayout(jPanel2, BoxLayout.LINE_AXIS));
 
-//            jPanel.add(keyPanel);
-//            jPanel.add(IVPanel);
-//            jPanel.add(algorithmPanel);
-//            jPanel.add(inputEncodePanel);
-//            jPanel.add(outputEncodePanel);
             jPanel1.add(keyPanel);
             jPanel1.add(IVPanel);
 

@@ -1,11 +1,8 @@
 package lib;
 
-import burp.BurpExtender;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.Buffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -41,23 +38,25 @@ public class ActiveCrypt {
             return html_encode(text, currentParameter.charset);
         if ("htmlDecode".equalsIgnoreCase(currentParameter.codeMethod))
             return html_decode(text, currentParameter.charset);
+        if ("stringReplace".equalsIgnoreCase(currentParameter.codeMethod))
+            return stringReplace(currentParameter.isReg, text, currentParameter.original, currentParameter.newString);
         if (currentParameter.isCrypt)
             if (currentParameter.isDecrypt) {
-                byte[] key = ProcessData.string2byes(currentParameter.key, currentParameter.keyCode);
-                byte[] IV = ProcessData.string2byes(currentParameter.IV, currentParameter.IVCode);
+                byte[] key = AutoCrypt.string2byes(currentParameter.key, currentParameter.keyCode);
+                byte[] IV = AutoCrypt.string2byes(currentParameter.IV, currentParameter.IVCode);
                 String decrypted = new Crypto(currentParameter.codeMethod, currentParameter.mode, key, IV, currentParameter.inCode).decrypt(text);
 
                 if ("hex".equalsIgnoreCase(currentParameter.outCode))
-                    return ProcessData.bytesToHex(decrypted.getBytes());
+                    return AutoCrypt.bytesToHex(decrypted.getBytes());
                 else if ("base64".equalsIgnoreCase(currentParameter.outCode))
                     return new String(Base64.getEncoder().encode(decrypted.getBytes()));
                 else
                     return decrypted;
             } else {
-                byte[] key = ProcessData.string2byes(currentParameter.key, currentParameter.keyCode);
-                byte[] IV = ProcessData.string2byes(currentParameter.IV, currentParameter.IVCode);
+                byte[] key = AutoCrypt.string2byes(currentParameter.key, currentParameter.keyCode);
+                byte[] IV = AutoCrypt.string2byes(currentParameter.IV, currentParameter.IVCode);
 
-                text = new String(ProcessData.string2byes(text, currentParameter.inCode));
+                text = new String(AutoCrypt.string2byes(text, currentParameter.inCode));
 
                 return new Crypto(currentParameter.codeMethod, currentParameter.mode, key, IV, currentParameter.outCode).encrypt(text);
             }
@@ -147,6 +146,14 @@ public class ActiveCrypt {
         return string2Hex(bytes, "", "", "iso-8859-1");
     }
 
+    public String stringReplace(boolean isReg, String text, String original, String newString){
+        if (isReg){
+            return text.replaceAll(original, newString);
+        }else {
+            return text.replace(original, newString);
+        }
+    }
+
     public static class CurrentParameter {
         public String codeMethod;
         public String charset = Charset.defaultCharset().name();
@@ -161,6 +168,9 @@ public class ActiveCrypt {
         public String mode;
         public String inCode;
         public String outCode;
+        public boolean isReg;
+        public String original;
+        public String newString;
 
         public CurrentParameter(String codeMethod) {
             this.codeMethod = codeMethod;
@@ -194,6 +204,13 @@ public class ActiveCrypt {
             this.charset = charset;
             this.url_encode_all = url_encode_all;
             this.isHash = isHash;
+        }
+
+        public CurrentParameter(String codeMethod, boolean isReg, String original, String newString){
+            this.codeMethod = codeMethod;
+            this.isReg = isReg;
+            this.original = original;
+            this.newString = newString;
         }
     }
 }
