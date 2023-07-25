@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.security.Security;
+import java.util.Objects;
 
 /**
  * 添加加解密链的UI，包括左侧选择列表和右侧已选择的加解密算法的卡片
@@ -140,8 +141,10 @@ public class ActiveCryptConfigUI extends JPanel {
                     nameTextField.setText(itemName);
                 }
 
-                String msg = CryptoChains.addChain(itemName, cryptoChain);
+                String msg = CryptoChains.addChain(itemName, cryptoChain.copy());
                 JOptionPane.showMessageDialog(null, msg, "提示", JOptionPane.INFORMATION_MESSAGE);
+
+
             }
         });
 

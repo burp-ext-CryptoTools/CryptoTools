@@ -55,7 +55,7 @@ public class EditorTabClass implements IMessageEditorTabFactory {
             IHttpService httpService = controller.getHttpService();
 
             if (httpService == null)
-                return false;
+                return true;
 
             /*
             真想不出怎么解决让插件在内层不显示的问题，待添加
@@ -73,9 +73,11 @@ public class EditorTabClass implements IMessageEditorTabFactory {
             this.isRequest = isRequest;
             this.currentMessage = content;
 
-            if (content != null || content.length != 0) {
-                byte[] newContent = AutoCrypt.unpackPacket(content, helpers, isRequest, true);
-                view.setMessage(newContent, isRequest);
+            if (content != null) {
+                if (content.length != 0) {
+                    byte[] newContent = AutoCrypt.unpackPacket(content, helpers, isRequest, true);
+                    view.setMessage(newContent, isRequest);
+                }
             }
         }
 

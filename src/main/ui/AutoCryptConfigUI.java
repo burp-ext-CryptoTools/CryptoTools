@@ -218,6 +218,9 @@ public class AutoCryptConfigUI extends JPanel {
          * @param items JComboBox展示的内容
          */
         public void refreshCryptoComboBox(String[] items){
+            String encryptoSelected = (String) encryptoComboBox.getSelectedItem();
+            String decryptoSelected = (String) decryptoComboBox.getSelectedItem();
+
             encryptoComboBox.removeAllItems();
             decryptoComboBox.removeAllItems();
 
@@ -228,6 +231,13 @@ public class AutoCryptConfigUI extends JPanel {
                 for (String item : items) {
                     encryptoComboBox.addItem(item);
                     decryptoComboBox.addItem(item);
+
+                    if (item.equals(encryptoSelected)) {
+                        encryptoComboBox.setSelectedItem(item);
+                    }
+                    if (item.equals(decryptoSelected)) {
+                        decryptoComboBox.setSelectedItem(item);
+                    }
                 }
             }else {
                 encryptoComboBox.addItem("暂无选择, 请添加");
