@@ -23,7 +23,7 @@
 
 # 使用说明
 
-[下载jar包](https://github.com/burp-ext-CryptoTools/CryptoTools/releases/tag/master)或自行编译。
+[下载jar包](https://github.com/burp-ext-CryptoTools/CryptoTools/releases/tag/2.1)或自行编译。
 
 使用original-cryptoTools-0.1.jar即可，cryptoTools-0.1.jar 将 kona-crypto 打包进去了，但是好像并没有生效。
 
@@ -140,8 +140,8 @@ burp自动替换
 
 # 版本
 
-|    时间    | 版本 |               备注                |
-| :--------: | :--: | :-------------------------------: |
-| 2023/06/18 | 1.0  |               新建                |
-| 2023/07/25 | 2.0  | 更改自动解密配置方式，修改诸多bug |
-
+|     时间     | 版本  |         备注         |
+|:----------:|:---:|:------------------:|
+| 2023/06/18 | 1.0 |         新建         |
+| 2023/07/25 | 2.0 | 更改自动解密配置方式，修改诸多bug |
+| 2023/07/26 | 2.1 |     修改一些体验上的问题     |

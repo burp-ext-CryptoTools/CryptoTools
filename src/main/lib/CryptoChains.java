@@ -41,6 +41,15 @@ public class CryptoChains {
         public LinkedHashMap<Integer, JPanel> cardChain = new LinkedHashMap<>();
         public LinkedHashMap<Integer, ActiveCrypt> cryptChain = new LinkedHashMap<>();
 
+        public CryptoChain() {
+
+        }
+
+        private CryptoChain(CryptoChain cryptoChain) {
+            this.cardChain = new LinkedHashMap<>(cryptoChain.cardChain);
+            this.cryptChain = new LinkedHashMap<>(cryptoChain.cryptChain);
+        }
+
         public void upItem(int index) {
             if (index == 1)
                 return;
@@ -176,6 +185,10 @@ public class CryptoChains {
                 text = cryptTool.handle(text);
             }
             return text;
+        }
+
+        public CryptoChain copy() {
+            return new CryptoChain(this);
         }
     }
 }
