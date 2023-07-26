@@ -27,9 +27,9 @@
 [下载jar包](https://github.com/burp-ext-CryptoTools/CryptoTools/releases/tag/2.1)或自行编译。
 
 
-使用original-cryptoTools-0.1.jar即可，cryptoTools-0.1.jar 将 kona-crypto 打包进去了，但是好像并没有生效。
+可以尝试使用cryptoTools-xx.jar，如果进行国密加解密报类似`Cannot find any provider supporting SM4/ECB/NoPadding`错误，则建议使用original-cryptoTools-xx.jar，然后将kona-crypto库加入到环境中，加入方式如下。
 
-[下载kona-crypto-1.0.8.jar](https://github.com/Tencent/TencentKonaSMSuite/releases/download/v1.0.8/kona-crypto-1.0.8.jar)，将下载目录加入环境，可能需要重启生效。没有依赖将不能使用国密。
+[下载kona-crypto-1.0.8.jar](https://github.com/Tencent/TencentKonaSMSuite/releases/download/v1.0.8/kona-crypto-1.0.8.jar)，将jar包所在目录加入环境，可能需要重启生效。没有依赖将不能使用国密。
 
 ![image-20230725015707104](./assets/image-20230725015707104.png)
 
