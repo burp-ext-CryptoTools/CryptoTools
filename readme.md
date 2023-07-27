@@ -26,8 +26,9 @@
 
 [下载jar包](https://github.com/burp-ext-CryptoTools/CryptoTools/releases/tag/2.1)或自行编译。
 
+经测试openjdk可以直接使用cryptoTools-xx.jar，不会出现类似`Cannot find any provider supporting SM4/ECB/NoPadding`的错误。
 
-可以尝试使用cryptoTools-xx.jar，如果进行国密加解密报类似`Cannot find any provider supporting SM4/ECB/NoPadding`错误，则建议使用original-cryptoTools-xx.jar，然后将kona-crypto库加入到环境中，加入方式如下。
+Oracle jdk建议使用original-cryptoTools-xx.jar，然后将kona-crypto库加入到环境中，加入方式如下。
 
 [下载kona-crypto-1.0.8.jar](https://github.com/Tencent/TencentKonaSMSuite/releases/download/v1.0.8/kona-crypto-1.0.8.jar)，将jar包所在目录加入环境，可能需要重启生效。没有依赖将不能使用国密。
 
